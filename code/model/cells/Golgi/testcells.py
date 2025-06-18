@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import glob
 import logging
+import sys
 
 import neuroml
 from neuroml.utils import component_factory
@@ -29,8 +30,9 @@ logger.addHandler(ch)
 logger.propagate = False
 
 
-def test_cells():
+def test_cells(amplitude: str = "0.05nA") -> None:
     """Test cells with input currents"""
+    print(f"Generating network with input: {amplitude}")
     neuroml_file = "GoC_cells_test.net.nml"
     cellfiles = glob.glob("*.cell.nml")
     logger.debug(f"Cell files are: {cellfiles}")
@@ -41,9 +43,9 @@ def test_cells():
     pg = newdoc.add(
         neuroml.PulseGenerator,
         id="pg",
-        delay="5ms",
+        delay="250 ms",
         duration="1000ms",
-        amplitude="0.07nA",
+        amplitude=amplitude,
     )
 
     ctr = 0
@@ -73,4 +75,7 @@ def test_cells():
 
 
 if __name__ == "__main__":
-    test_cells()
+    if len(sys.argv) == 2:
+        test_cells(sys.argv[1])
+    else:
+        test_cells()
