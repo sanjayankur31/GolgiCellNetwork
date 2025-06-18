@@ -1,0 +1,535 @@
+<Lems>
+
+    <!--
+
+        This LEMS file has been automatically generated using PyNeuroML v1.3.19 (libNeuroML v0.6.8)
+
+     -->
+
+    <!-- Specify which component to run -->
+    <Target component="test_golgi_cells"/>
+
+    <!-- Include core NeuroML2 ComponentType definitions -->
+    <Include file="Cells.xml"/>
+    <Include file="Networks.xml"/>
+    <Include file="Simulation.xml"/>
+
+    <Include file="GoC_cells_test.net.nml"/>
+    <Include file="GoC_00613.cell.nml"/>
+    <Include file="GoC_00276.cell.nml"/>
+    <Include file="GoC_00025.cell.nml"/>
+    <Include file="GoC_00535.cell.nml"/>
+    <Include file="GoC_00848.cell.nml"/>
+    <Include file="GoC_00536.cell.nml"/>
+    <Include file="GoC_00854.cell.nml"/>
+    <Include file="GoC_00625.cell.nml"/>
+    <Include file="GoC_00977.cell.nml"/>
+    <Include file="GoC_00856.cell.nml"/>
+    <Include file="GoC_00784.cell.nml"/>
+    <Include file="GoC_00160.cell.nml"/>
+    <Include file="GoC_00305.cell.nml"/>
+    <Include file="GoC_00541.cell.nml"/>
+    <Include file="GoC_00415.cell.nml"/>
+    <Include file="GoC_00748.cell.nml"/>
+    <Include file="GoC_00514.cell.nml"/>
+    <Include file="Golgi_040408_C1.cell.nml"/>
+    <Include file="GoC_00928.cell.nml"/>
+    <Include file="GoC_00427.cell.nml"/>
+    <Include file="GoC_00241.cell.nml"/>
+    <Include file="GoC_2Pools.cell.nml"/>
+    <Include file="GoC_00956.cell.nml"/>
+    <Include file="GoC_00880.cell.nml"/>
+    <Include file="GoC_00707.cell.nml"/>
+    <Include file="GoC_00128.cell.nml"/>
+    <Include file="GoC_00428.cell.nml"/>
+    <Include file="GoC.cell.nml"/>
+    <Include file="GoC_00669.cell.nml"/>
+    <Include file="GoC_00975.cell.nml"/>
+    <Include file="GoC_00000.cell.nml"/>
+    <Include file="GoC_00298.cell.nml"/>
+    <Include file="GoC_00774.cell.nml"/>
+    <Include file="GoC_00271.cell.nml"/>
+    <Include file="GoC_00348.cell.nml"/>
+    <Include file="GoC_00735.cell.nml"/>
+    <Include file="GoC_00416.cell.nml"/>
+    <Include file="GoC_00736.cell.nml"/>
+    <Include file="GoC_00001.cell.nml"/>
+    <Include file="GoC_00809.cell.nml"/>
+    <Include file="GoC_040408_C1.cell.nml"/>
+    <Include file="GoC_00744.cell.nml"/>
+    <Include file="GoC_00508.cell.nml"/>
+    <Include file="GoC_00263.cell.nml"/>
+    <Include file="GoC_00458.cell.nml"/>
+    <Include file="GoC_00860.cell.nml"/>
+    <Include file="GoC_00435.cell.nml"/>
+    <Include file="GoC_00829.cell.nml"/>
+    <Include file="GoC_00901.cell.nml"/>
+    <Include file="GoC_00601.cell.nml"/>
+    <Include file="GoC_00398.cell.nml"/>
+    <Include file="GoC_00995.cell.nml"/>
+    <Include file="GoC_00665.cell.nml"/>
+    <Include file="GoC_00711.cell.nml"/>
+    <Include file="GoC_00177.cell.nml"/>
+    <Include file="GoC_00032.cell.nml"/>
+    <Include file="GoC_00659.cell.nml"/>
+
+    <Simulation id="test_golgi_cells" length="1500.0ms" step="0.01ms" target="test_golgi_cell_network" seed="12345">  <!-- Note seed: ensures same random numbers used every run -->
+        <Display id="DispPop__golgi_cell_pop_0" title="Membrane potentials of cells in golgi_cell_pop_0" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_0[0]: v" quantity="golgi_cell_pop_0[0]/v" scale="1mV" color="#d54f33" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_1" title="Membrane potentials of cells in golgi_cell_pop_1" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_1[0]: v" quantity="golgi_cell_pop_1[0]/v" scale="1mV" color="#0534e4" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_2" title="Membrane potentials of cells in golgi_cell_pop_2" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_2[0]: v" quantity="golgi_cell_pop_2[0]/v" scale="1mV" color="#98e752" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_3" title="Membrane potentials of cells in golgi_cell_pop_3" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_3[0]: v" quantity="golgi_cell_pop_3[0]/v" scale="1mV" color="#bca074" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_4" title="Membrane potentials of cells in golgi_cell_pop_4" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_4[0]: v" quantity="golgi_cell_pop_4[0]/v" scale="1mV" color="#632794" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_5" title="Membrane potentials of cells in golgi_cell_pop_5" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_5[0]: v" quantity="golgi_cell_pop_5[0]/v" scale="1mV" color="#8a5d88" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_6" title="Membrane potentials of cells in golgi_cell_pop_6" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_6[0]: v" quantity="golgi_cell_pop_6[0]/v" scale="1mV" color="#df5954" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_7" title="Membrane potentials of cells in golgi_cell_pop_7" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_7[0]: v" quantity="golgi_cell_pop_7[0]/v" scale="1mV" color="#52c8bf" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_8" title="Membrane potentials of cells in golgi_cell_pop_8" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_8[0]: v" quantity="golgi_cell_pop_8[0]/v" scale="1mV" color="#bf0239" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_9" title="Membrane potentials of cells in golgi_cell_pop_9" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_9[0]: v" quantity="golgi_cell_pop_9[0]/v" scale="1mV" color="#3f9fe8" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_10" title="Membrane potentials of cells in golgi_cell_pop_10" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_10[0]: v" quantity="golgi_cell_pop_10[0]/v" scale="1mV" color="#dda9d2" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_11" title="Membrane potentials of cells in golgi_cell_pop_11" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_11[0]: v" quantity="golgi_cell_pop_11[0]/v" scale="1mV" color="#85ad96" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_12" title="Membrane potentials of cells in golgi_cell_pop_12" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_12[0]: v" quantity="golgi_cell_pop_12[0]/v" scale="1mV" color="#59438f" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_13" title="Membrane potentials of cells in golgi_cell_pop_13" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_13[0]: v" quantity="golgi_cell_pop_13[0]/v" scale="1mV" color="#5fa56f" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_14" title="Membrane potentials of cells in golgi_cell_pop_14" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_14[0]: v" quantity="golgi_cell_pop_14[0]/v" scale="1mV" color="#b5b5a2" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_15" title="Membrane potentials of cells in golgi_cell_pop_15" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_15[0]: v" quantity="golgi_cell_pop_15[0]/v" scale="1mV" color="#2ebe19" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_16" title="Membrane potentials of cells in golgi_cell_pop_16" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_16[0]: v" quantity="golgi_cell_pop_16[0]/v" scale="1mV" color="#d30150" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_17" title="Membrane potentials of cells in golgi_cell_pop_17" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_17[0]: v" quantity="golgi_cell_pop_17[0]/v" scale="1mV" color="#55490a" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_18" title="Membrane potentials of cells in golgi_cell_pop_18" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_18[0]: v" quantity="golgi_cell_pop_18[0]/v" scale="1mV" color="#4bd9d0" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_19" title="Membrane potentials of cells in golgi_cell_pop_19" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_19[0]: v" quantity="golgi_cell_pop_19[0]/v" scale="1mV" color="#69535e" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_20" title="Membrane potentials of cells in golgi_cell_pop_20" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_20[0]: v" quantity="golgi_cell_pop_20[0]/v" scale="1mV" color="#27dae9" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_21" title="Membrane potentials of cells in golgi_cell_pop_21" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_21[0]: v" quantity="golgi_cell_pop_21[0]/v" scale="1mV" color="#6143ed" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_22" title="Membrane potentials of cells in golgi_cell_pop_22" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_22[0]: v" quantity="golgi_cell_pop_22[0]/v" scale="1mV" color="#aee102" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_23" title="Membrane potentials of cells in golgi_cell_pop_23" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_23[0]: v" quantity="golgi_cell_pop_23[0]/v" scale="1mV" color="#a4e245" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_24" title="Membrane potentials of cells in golgi_cell_pop_24" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_24[0]: v" quantity="golgi_cell_pop_24[0]/v" scale="1mV" color="#0c0af9" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_25" title="Membrane potentials of cells in golgi_cell_pop_25" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_25[0]: v" quantity="golgi_cell_pop_25[0]/v" scale="1mV" color="#eaece2" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_26" title="Membrane potentials of cells in golgi_cell_pop_26" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_26[0]: v" quantity="golgi_cell_pop_26[0]/v" scale="1mV" color="#add546" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_27" title="Membrane potentials of cells in golgi_cell_pop_27" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_27[0]: v" quantity="golgi_cell_pop_27[0]/v" scale="1mV" color="#0dc1e8" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_28" title="Membrane potentials of cells in golgi_cell_pop_28" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_28[0]: v" quantity="golgi_cell_pop_28[0]/v" scale="1mV" color="#d4b998" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_29" title="Membrane potentials of cells in golgi_cell_pop_29" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_29[0]: v" quantity="golgi_cell_pop_29[0]/v" scale="1mV" color="#01c4cd" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_30" title="Membrane potentials of cells in golgi_cell_pop_30" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_30[0]: v" quantity="golgi_cell_pop_30[0]/v" scale="1mV" color="#036aae" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_31" title="Membrane potentials of cells in golgi_cell_pop_31" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_31[0]: v" quantity="golgi_cell_pop_31[0]/v" scale="1mV" color="#53de83" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_32" title="Membrane potentials of cells in golgi_cell_pop_32" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_32[0]: v" quantity="golgi_cell_pop_32[0]/v" scale="1mV" color="#5b9557" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_33" title="Membrane potentials of cells in golgi_cell_pop_33" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_33[0]: v" quantity="golgi_cell_pop_33[0]/v" scale="1mV" color="#92b9f4" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_34" title="Membrane potentials of cells in golgi_cell_pop_34" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_34[0]: v" quantity="golgi_cell_pop_34[0]/v" scale="1mV" color="#32f19d" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_35" title="Membrane potentials of cells in golgi_cell_pop_35" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_35[0]: v" quantity="golgi_cell_pop_35[0]/v" scale="1mV" color="#d43d99" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_36" title="Membrane potentials of cells in golgi_cell_pop_36" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_36[0]: v" quantity="golgi_cell_pop_36[0]/v" scale="1mV" color="#36379e" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_37" title="Membrane potentials of cells in golgi_cell_pop_37" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_37[0]: v" quantity="golgi_cell_pop_37[0]/v" scale="1mV" color="#5d01b7" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_38" title="Membrane potentials of cells in golgi_cell_pop_38" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_38[0]: v" quantity="golgi_cell_pop_38[0]/v" scale="1mV" color="#c0004f" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_39" title="Membrane potentials of cells in golgi_cell_pop_39" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_39[0]: v" quantity="golgi_cell_pop_39[0]/v" scale="1mV" color="#771a1c" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_40" title="Membrane potentials of cells in golgi_cell_pop_40" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_40[0]: v" quantity="golgi_cell_pop_40[0]/v" scale="1mV" color="#a8e7b4" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_41" title="Membrane potentials of cells in golgi_cell_pop_41" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_41[0]: v" quantity="golgi_cell_pop_41[0]/v" scale="1mV" color="#149bc7" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_42" title="Membrane potentials of cells in golgi_cell_pop_42" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_42[0]: v" quantity="golgi_cell_pop_42[0]/v" scale="1mV" color="#76f116" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_43" title="Membrane potentials of cells in golgi_cell_pop_43" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_43[0]: v" quantity="golgi_cell_pop_43[0]/v" scale="1mV" color="#3d56b9" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_44" title="Membrane potentials of cells in golgi_cell_pop_44" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_44[0]: v" quantity="golgi_cell_pop_44[0]/v" scale="1mV" color="#ff9a67" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_45" title="Membrane potentials of cells in golgi_cell_pop_45" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_45[0]: v" quantity="golgi_cell_pop_45[0]/v" scale="1mV" color="#6ec96a" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_46" title="Membrane potentials of cells in golgi_cell_pop_46" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_46[0]: v" quantity="golgi_cell_pop_46[0]/v" scale="1mV" color="#5f24e5" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_47" title="Membrane potentials of cells in golgi_cell_pop_47" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_47[0]: v" quantity="golgi_cell_pop_47[0]/v" scale="1mV" color="#83f5a5" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_48" title="Membrane potentials of cells in golgi_cell_pop_48" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_48[0]: v" quantity="golgi_cell_pop_48[0]/v" scale="1mV" color="#de0aae" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_49" title="Membrane potentials of cells in golgi_cell_pop_49" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_49[0]: v" quantity="golgi_cell_pop_49[0]/v" scale="1mV" color="#427e32" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_50" title="Membrane potentials of cells in golgi_cell_pop_50" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_50[0]: v" quantity="golgi_cell_pop_50[0]/v" scale="1mV" color="#1544a0" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_51" title="Membrane potentials of cells in golgi_cell_pop_51" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_51[0]: v" quantity="golgi_cell_pop_51[0]/v" scale="1mV" color="#5409ee" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_52" title="Membrane potentials of cells in golgi_cell_pop_52" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_52[0]: v" quantity="golgi_cell_pop_52[0]/v" scale="1mV" color="#9a477d" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_53" title="Membrane potentials of cells in golgi_cell_pop_53" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_53[0]: v" quantity="golgi_cell_pop_53[0]/v" scale="1mV" color="#04ca61" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_54" title="Membrane potentials of cells in golgi_cell_pop_54" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_54[0]: v" quantity="golgi_cell_pop_54[0]/v" scale="1mV" color="#4cf083" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_55" title="Membrane potentials of cells in golgi_cell_pop_55" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_55[0]: v" quantity="golgi_cell_pop_55[0]/v" scale="1mV" color="#754e4b" timeScale="1ms"/>
+        </Display>
+
+        <Display id="DispPop__golgi_cell_pop_56" title="Membrane potentials of cells in golgi_cell_pop_56" timeScale="1ms" xmin="-150.0" xmax="1650.0000000000002" ymin="-90" ymax="50">
+            <Line id="golgi_cell_pop_56[0]: v" quantity="golgi_cell_pop_56[0]/v" scale="1mV" color="#b30f75" timeScale="1ms"/>
+        </Display>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_0" fileName="test_golgi_cells.golgi_cell_pop_0.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_0_0__v" quantity="golgi_cell_pop_0[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_1" fileName="test_golgi_cells.golgi_cell_pop_1.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_1_0__v" quantity="golgi_cell_pop_1[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_2" fileName="test_golgi_cells.golgi_cell_pop_2.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_2_0__v" quantity="golgi_cell_pop_2[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_3" fileName="test_golgi_cells.golgi_cell_pop_3.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_3_0__v" quantity="golgi_cell_pop_3[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_4" fileName="test_golgi_cells.golgi_cell_pop_4.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_4_0__v" quantity="golgi_cell_pop_4[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_5" fileName="test_golgi_cells.golgi_cell_pop_5.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_5_0__v" quantity="golgi_cell_pop_5[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_6" fileName="test_golgi_cells.golgi_cell_pop_6.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_6_0__v" quantity="golgi_cell_pop_6[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_7" fileName="test_golgi_cells.golgi_cell_pop_7.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_7_0__v" quantity="golgi_cell_pop_7[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_8" fileName="test_golgi_cells.golgi_cell_pop_8.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_8_0__v" quantity="golgi_cell_pop_8[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_9" fileName="test_golgi_cells.golgi_cell_pop_9.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_9_0__v" quantity="golgi_cell_pop_9[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_10" fileName="test_golgi_cells.golgi_cell_pop_10.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_10_0__v" quantity="golgi_cell_pop_10[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_11" fileName="test_golgi_cells.golgi_cell_pop_11.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_11_0__v" quantity="golgi_cell_pop_11[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_12" fileName="test_golgi_cells.golgi_cell_pop_12.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_12_0__v" quantity="golgi_cell_pop_12[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_13" fileName="test_golgi_cells.golgi_cell_pop_13.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_13_0__v" quantity="golgi_cell_pop_13[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_14" fileName="test_golgi_cells.golgi_cell_pop_14.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_14_0__v" quantity="golgi_cell_pop_14[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_15" fileName="test_golgi_cells.golgi_cell_pop_15.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_15_0__v" quantity="golgi_cell_pop_15[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_16" fileName="test_golgi_cells.golgi_cell_pop_16.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_16_0__v" quantity="golgi_cell_pop_16[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_17" fileName="test_golgi_cells.golgi_cell_pop_17.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_17_0__v" quantity="golgi_cell_pop_17[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_18" fileName="test_golgi_cells.golgi_cell_pop_18.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_18_0__v" quantity="golgi_cell_pop_18[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_19" fileName="test_golgi_cells.golgi_cell_pop_19.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_19_0__v" quantity="golgi_cell_pop_19[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_20" fileName="test_golgi_cells.golgi_cell_pop_20.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_20_0__v" quantity="golgi_cell_pop_20[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_21" fileName="test_golgi_cells.golgi_cell_pop_21.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_21_0__v" quantity="golgi_cell_pop_21[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_22" fileName="test_golgi_cells.golgi_cell_pop_22.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_22_0__v" quantity="golgi_cell_pop_22[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_23" fileName="test_golgi_cells.golgi_cell_pop_23.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_23_0__v" quantity="golgi_cell_pop_23[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_24" fileName="test_golgi_cells.golgi_cell_pop_24.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_24_0__v" quantity="golgi_cell_pop_24[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_25" fileName="test_golgi_cells.golgi_cell_pop_25.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_25_0__v" quantity="golgi_cell_pop_25[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_26" fileName="test_golgi_cells.golgi_cell_pop_26.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_26_0__v" quantity="golgi_cell_pop_26[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_27" fileName="test_golgi_cells.golgi_cell_pop_27.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_27_0__v" quantity="golgi_cell_pop_27[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_28" fileName="test_golgi_cells.golgi_cell_pop_28.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_28_0__v" quantity="golgi_cell_pop_28[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_29" fileName="test_golgi_cells.golgi_cell_pop_29.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_29_0__v" quantity="golgi_cell_pop_29[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_30" fileName="test_golgi_cells.golgi_cell_pop_30.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_30_0__v" quantity="golgi_cell_pop_30[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_31" fileName="test_golgi_cells.golgi_cell_pop_31.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_31_0__v" quantity="golgi_cell_pop_31[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_32" fileName="test_golgi_cells.golgi_cell_pop_32.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_32_0__v" quantity="golgi_cell_pop_32[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_33" fileName="test_golgi_cells.golgi_cell_pop_33.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_33_0__v" quantity="golgi_cell_pop_33[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_34" fileName="test_golgi_cells.golgi_cell_pop_34.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_34_0__v" quantity="golgi_cell_pop_34[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_35" fileName="test_golgi_cells.golgi_cell_pop_35.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_35_0__v" quantity="golgi_cell_pop_35[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_36" fileName="test_golgi_cells.golgi_cell_pop_36.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_36_0__v" quantity="golgi_cell_pop_36[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_37" fileName="test_golgi_cells.golgi_cell_pop_37.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_37_0__v" quantity="golgi_cell_pop_37[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_38" fileName="test_golgi_cells.golgi_cell_pop_38.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_38_0__v" quantity="golgi_cell_pop_38[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_39" fileName="test_golgi_cells.golgi_cell_pop_39.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_39_0__v" quantity="golgi_cell_pop_39[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_40" fileName="test_golgi_cells.golgi_cell_pop_40.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_40_0__v" quantity="golgi_cell_pop_40[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_41" fileName="test_golgi_cells.golgi_cell_pop_41.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_41_0__v" quantity="golgi_cell_pop_41[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_42" fileName="test_golgi_cells.golgi_cell_pop_42.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_42_0__v" quantity="golgi_cell_pop_42[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_43" fileName="test_golgi_cells.golgi_cell_pop_43.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_43_0__v" quantity="golgi_cell_pop_43[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_44" fileName="test_golgi_cells.golgi_cell_pop_44.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_44_0__v" quantity="golgi_cell_pop_44[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_45" fileName="test_golgi_cells.golgi_cell_pop_45.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_45_0__v" quantity="golgi_cell_pop_45[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_46" fileName="test_golgi_cells.golgi_cell_pop_46.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_46_0__v" quantity="golgi_cell_pop_46[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_47" fileName="test_golgi_cells.golgi_cell_pop_47.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_47_0__v" quantity="golgi_cell_pop_47[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_48" fileName="test_golgi_cells.golgi_cell_pop_48.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_48_0__v" quantity="golgi_cell_pop_48[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_49" fileName="test_golgi_cells.golgi_cell_pop_49.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_49_0__v" quantity="golgi_cell_pop_49[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_50" fileName="test_golgi_cells.golgi_cell_pop_50.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_50_0__v" quantity="golgi_cell_pop_50[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_51" fileName="test_golgi_cells.golgi_cell_pop_51.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_51_0__v" quantity="golgi_cell_pop_51[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_52" fileName="test_golgi_cells.golgi_cell_pop_52.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_52_0__v" quantity="golgi_cell_pop_52[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_53" fileName="test_golgi_cells.golgi_cell_pop_53.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_53_0__v" quantity="golgi_cell_pop_53[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_54" fileName="test_golgi_cells.golgi_cell_pop_54.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_54_0__v" quantity="golgi_cell_pop_54[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_55" fileName="test_golgi_cells.golgi_cell_pop_55.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_55_0__v" quantity="golgi_cell_pop_55[0]/v"/>
+        </OutputFile>
+
+        <OutputFile id="Volts_file__golgi_cell_pop_56" fileName="test_golgi_cells.golgi_cell_pop_56.v.dat">
+            <OutputColumn id="v_golgi_cell_pop_56_0__v" quantity="golgi_cell_pop_56[0]/v"/>
+        </OutputFile>
+
+    </Simulation>
+
+</Lems>
