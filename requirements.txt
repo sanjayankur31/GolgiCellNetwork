@@ -1,0 +1,8 @@
+pyneuroml
+pyneuroml[neuron]
+pyneuroml[vispy]
+OSBModelValidation
+ruff
+pre-commit
+flake8
+mypy
