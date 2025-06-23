@@ -1,0 +1,8 @@
+{
+    "seed": "1234",
+    "unused": {
+        "neuroml_file": "some_thing",
+        "lems_file": "some_thing",
+        "logging_level": "DEBUG"
+    }
+}
