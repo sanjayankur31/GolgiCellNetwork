@@ -94,7 +94,12 @@ class GolgiCellNetwork(object):
         if lems_file:
             self.lems_file = lems_file
         else:
-            self.lems_file = "some sane default"
+            # if not already set, use a default
+            if not hasattr(self, "lems_file"):
+                self.logger.error(
+                    "No file name set for lems_file before, please pass a value"
+                )
+                return
 
         quantities, sim = generate_lems_file_for_neuroml(
             sim_id="test_golgi_cells",
@@ -112,11 +117,24 @@ class GolgiCellNetwork(object):
         skip_run: bool = True,
         only_generate_scripts: bool = False,
     ):
-        """Simulate the model"""
+        """Simulate the model
+
+        :param skip_run: only parse file but do not generate scripts or run
+        :type skip_run: bool
+        :param only_generate_scripts: toggle whether only the runner script
+            should be generated
+        :type only_generate_scripts: bool
+
+        """
         if lems_file:
             self.lems_file = lems_file
         else:
-            self.lems_file = "some sane default"
+            # if not already set, use a default
+            if not hasattr(self, "lems_file"):
+                self.logger.error(
+                    "No file name set for lems_file before, please pass a value"
+                )
+                return
 
         # https://pyneuroml.readthedocs.io/en/development/pyneuroml.runners.html#pyneuroml.runners.run_lems_with
         # you can also use `pynml ..` from the command line to do this
