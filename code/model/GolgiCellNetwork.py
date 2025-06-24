@@ -17,6 +17,7 @@ import neuroml
 import numpy
 import typer
 from neuroml.utils import component_factory
+from pyneuroml.annotations import create_annotation
 from pyneuroml.io import write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
 from pyneuroml.runners import run_lems_with
@@ -28,6 +29,29 @@ class GolgiCellNetwork(object):
 
     network_name = "Golgi_cell_network"
     nml_document = component_factory(neuroml.NeuroMLDocument, id=network_name)
+    annotation = create_annotation(
+        subject="Golgi_cell_network",
+        abstract="Cerebellar Golgi Cell network model",
+        title="Cerebellar Golgi Cell network model",
+        annotation_style="miriam",
+        xml_header=False,
+        keywords=["Golgi cell", "Cerebellum"],
+        creation_date="2025-06-21",
+        authors={
+            "Ankur Sinha": {
+                "ankur.sinha@ucl.ac.uk": "email",
+                "https://orcid.org/0000-0001-7568-7167": "orcid",
+            }
+        },
+        sources={"https://github.com/sanjayankur31/GolgiCellNetwork/": "GitHub"},
+        is_version_of={
+            "https://github.com/harshagurnani/GoC_Network_Sim_BehInputs": "Gurnani 2021"
+        },
+        references={
+            "https://doi.org/10.1016/j.neuron.2021.03.027": "Gurnani and Silver, 2021, Neuron 109, 1-15"
+        },
+    )
+    nml_document.annotation = neuroml.Annotation([annotation])
     network = nml_document.add(neuroml.Network, id="Golgi_cell_network", validate=False)
 
     def __init__(
