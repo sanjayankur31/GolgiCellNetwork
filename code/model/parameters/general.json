@@ -1,8 +1,9 @@
 {
+    "label": "an_optional_label",
     "seed": "1234",
-    "unused": {
+    "logging_level": "DEBUG",
+    "hack to keep unused bits is to put them in a dict that wont be used": {
         "neuroml_file": "some_thing",
-        "lems_file": "some_thing",
-        "logging_level": "DEBUG"
+        "lems_file": "some_thing"
     }
 }
