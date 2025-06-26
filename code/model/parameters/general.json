@@ -1,5 +1,5 @@
 {
-    "label": "an_optional_label",
+    "label": "default",
     "seed": "1234",
     "logging_level": "DEBUG",
     "hack to keep unused bits is to put them in a dict that wont be used": {

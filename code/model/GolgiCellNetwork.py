@@ -15,10 +15,11 @@ import typing
 
 import neuroml
 import numpy
+import scipy
 import typer
 from neuroml.utils import component_factory
 from pyneuroml.annotations import create_annotation
-from pyneuroml.io import write_neuroml2_file
+from pyneuroml.io import read_neuroml2_file, write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
 from pyneuroml.runners import run_lems_with
 from pyneuroml.utils.units import split_nml2_quantity
@@ -48,7 +49,8 @@ class GolgiCellNetwork(object):
             "https://github.com/harshagurnani/GoC_Network_Sim_BehInputs": "Gurnani 2021"
         },
         references={
-            "https://doi.org/10.1016/j.neuron.2021.03.027": "Gurnani and Silver, 2021, Neuron 109, 1-15"
+            "https://doi.org/10.1016/j.neuron.2021.03.027": "Gurnani and Silver, 2021, Neuron 109, 1-15",
+            "https://doi.org/10.1016/j.neuron.2010.06.028": "Vervaeke et al, 2010, Neuron 67, 435 - 451",
         },
     )
     nml_document.annotation = neuroml.Annotation([annotation])
@@ -159,12 +161,14 @@ class GolgiCellNetwork(object):
         )
         self.golgi_cell_files = glob.glob("./cells/Golgi/GoC_*.cell.nml")
         self.golgi_cell_variants = numpy.random.choice(
-            self.golgi_cell_files, self.num_golgi_populations
+            self.golgi_cell_files, self.num_golgi_populations, replace=False
         )
+        self.logger.debug(f"VAR: {self.golgi_cell_variants = }")
 
         self.__get_golgi_cell_locations()
 
         self.__create_network()
+        self.__create_gap_junctions()
 
         # write to file
         write_neuroml2_file(self.nml_document, self.neuroml_file)
@@ -184,18 +188,79 @@ class GolgiCellNetwork(object):
         self.num_golgi_cells = self.num_golgi_populations * round(
             self.num_golgi_cells / self.num_golgi_populations
         )
-        self.__log_var("num_golgi_cells")
+        self.logger.debug(f"VAR: {self.num_golgi_cells = }")
 
         self.golgi_cell_locations: typing.List[typing.List[float]] = (
             numpy.random.random_sample((self.num_golgi_cells, 3)) * [x, y, z]
         )
 
-        self.num_cells_per_golgi_cell_variant = (
+        self.num_cells_per_golgi_cell_variant = int(
             self.num_golgi_cells / self.num_golgi_populations
         )
+        self.logger.debug(f"VAR: {self.num_cells_per_golgi_cell_variant = }")
 
     def __create_network(self):
         """Create network"""
+        location_ctr = 0
+        for pnum in range(0, self.num_golgi_populations):
+            golgi_cell_variant = self.golgi_cell_variants[pnum]
+            golgi_cell_component = read_neuroml2_file(golgi_cell_variant).cells[0]
+            self.nml_document.add(neuroml.IncludeType, href=golgi_cell_variant)
+            pop = self.network.add(
+                neuroml.Population,
+                id=f"{golgi_cell_component.id}",
+                component=golgi_cell_component.id,
+                type="populationList",
+            )
+
+            for ins in range(0, self.num_cells_per_golgi_cell_variant):
+                x = self.golgi_cell_locations[location_ctr][0]
+                y = self.golgi_cell_locations[location_ctr][1]
+                z = self.golgi_cell_locations[location_ctr][2]
+
+                pop.add(
+                    neuroml.Instance, id=ins, location=neuroml.Location(x=x, y=y, z=z)
+                )
+                location_ctr += 1
+
+    def __create_gap_junctions(self):
+        """Create gap junctions between cells"""
+        self.nml_document.add(
+            neuroml.GapJunction,
+            id="Gj_0",
+            conductance=self.model_params.get("Gap_junctions")["conductance"],
+        )
+        self.logger.debug(f"VAR: {self.golgi_cell_locations.shape = }")
+        distance_bw_cells = scipy.spatial.distance.pdist(
+            self.golgi_cell_locations, metric="euclidean"
+        )
+        self.logger.debug(f"VAR: {distance_bw_cells = }")
+        distance_bw_cells_matrix = scipy.spatial.distance.squareform(distance_bw_cells)
+        self.logger.debug(f"VAR: {distance_bw_cells_matrix.shape = }")
+
+        # Vervaeke et al 2010, Figure 7
+        connection_probability = 1e-2 * (
+            -1745 + 1836 / (1 + numpy.exp((distance_bw_cells_matrix - 267) / 39))
+        )
+
+        random_matrix = numpy.random.random(size=distance_bw_cells_matrix.shape)
+        connection_probability -= random_matrix
+
+        # ensure minimum probability is 0
+        connection_probability = numpy.maximum(connection_probability, 0)
+        self.logger.debug(f"VAR: {connection_probability = }")
+
+        pop_ctr = 0
+        for pop in self.network.populations:
+            for cell_instance in pop.instances:
+                cell_index = (
+                    pop_ctr * self.num_cells_per_golgi_cell_variant
+                ) + cell_instance.id
+                self.logger.debug(f"{cell_index = }")
+
+                # handle connection probability
+
+            pop_ctr += 1
 
     def create_simulation(self, lems_file: typing.Optional[str] = None):
         """Create simulation
@@ -252,15 +317,6 @@ class GolgiCellNetwork(object):
         run_lems_with(
             engine="jneuroml_neuron", lems_file_name=self.lems_file, skip_run=skip_run
         )
-
-    def __log_var(self, var: str):
-        """Print value of class variable to debug logger
-
-        :param var: name of variable
-        :type var: str
-
-        """
-        self.logger.debug(f"VAR: {var}: {getattr(self, var)}")
 
 
 if __name__ == "__main__":
