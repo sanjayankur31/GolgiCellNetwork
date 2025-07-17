@@ -1,4 +1,5 @@
 pyneuroml
+pyneuroml[annotations]
 pyneuroml[neuron]
 pyneuroml[vispy]
 OSBModelValidation
