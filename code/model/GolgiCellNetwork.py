@@ -231,36 +231,59 @@ class GolgiCellNetwork(object):
             conductance=self.model_params.get("Gap_junctions")["conductance"],
         )
         self.logger.debug(f"VAR: {self.golgi_cell_locations.shape = }")
+        # returns the matrix in condensed form where it is read in row major
+        # form
         distance_bw_cells = scipy.spatial.distance.pdist(
             self.golgi_cell_locations, metric="euclidean"
         )
         self.logger.debug(f"VAR: {distance_bw_cells = }")
-        distance_bw_cells_matrix = scipy.spatial.distance.squareform(distance_bw_cells)
-        self.logger.debug(f"VAR: {distance_bw_cells_matrix.shape = }")
+
+        # Only convert to square form when required, but until then, use
+        # condensed form. The matrix will remain symmetric from here.
+        # distance_bw_cells_matrix = scipy.spatial.distance.squareform(distance_bw_cells)
+        # self.logger.debug(f"VAR: {distance_bw_cells_matrix.shape = }")
 
         # Vervaeke et al 2010, Figure 7
         connection_probability = 1e-2 * (
-            -1745 + 1836 / (1 + numpy.exp((distance_bw_cells_matrix - 267) / 39))
+            -1745 + 1836 / (1 + numpy.exp((distance_bw_cells - 267) / 39))
         )
 
-        random_matrix = numpy.random.random(size=distance_bw_cells_matrix.shape)
+        random_matrix = numpy.random.random(size=distance_bw_cells.shape)
         connection_probability -= random_matrix
 
         # ensure minimum probability is 0
         connection_probability = numpy.maximum(connection_probability, 0)
         self.logger.debug(f"VAR: {connection_probability = }")
 
-        pop_ctr = 0
-        for pop in self.network.populations:
-            for cell_instance in pop.instances:
-                cell_index = (
-                    pop_ctr * self.num_cells_per_golgi_cell_variant
-                ) + cell_instance.id
-                self.logger.debug(f"{cell_index = }")
+        weights_matrix = self.__get_gap_junction_weights_vervaeke2010(distance_bw_cells)
+        self.logger.debug(f"VAR: {weights_matrix = }")
 
-                # handle connection probability
+        # pop_ctr = 0
+        # for pop in self.network.populations:
+        #     for cell_instance in pop.instances:
+        #         cell_index = (
+        #             pop_ctr * self.num_cells_per_golgi_cell_variant
+        #         ) + cell_instance.id
+        #         self.logger.debug(f"{cell_index = }")
+        #
+        #         # handle connection probability
+        #
+        #     pop_ctr += 1
 
-            pop_ctr += 1
+    def __get_gap_junction_weights_vervaeke2010(self, dist_matrix, dist_k=1):
+        """Get weights of gap junctions as a function of distances between the
+        cell somas
+        """
+        coupling_coefficient = -2.3 + 29.7 * numpy.exp(
+            (-1 * dist_matrix) / (70.4 * dist_k)
+        )
+        weights = (
+            0.576 * numpy.exp(coupling_coefficient / 12.4)
+            + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
+            - 0.564
+        )
+
+        return weights
 
     def create_simulation(self, lems_file: typing.Optional[str] = None):
         """Create simulation
