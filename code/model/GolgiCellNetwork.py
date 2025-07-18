@@ -8,9 +8,11 @@ Copyright 2025 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import functools
 import glob
 import json
 import logging
+import random
 import typing
 
 import neuroml
@@ -201,14 +203,19 @@ class GolgiCellNetwork(object):
 
     def __create_network(self):
         """Create network"""
+        # track components in case we need them later
+        self.golgi_cell_components = {}
         location_ctr = 0
         for pnum in range(0, self.num_golgi_populations):
             golgi_cell_variant = self.golgi_cell_variants[pnum]
+
             golgi_cell_component = read_neuroml2_file(golgi_cell_variant).cells[0]
+            self.golgi_cell_components[golgi_cell_component.id] = golgi_cell_component
+
             self.nml_document.add(neuroml.IncludeType, href=golgi_cell_variant)
             pop = self.network.add(
                 neuroml.Population,
-                id=f"{golgi_cell_component.id}",
+                id=f"pop_{golgi_cell_component.id}",
                 component=golgi_cell_component.id,
                 type="populationList",
             )
@@ -225,9 +232,9 @@ class GolgiCellNetwork(object):
 
     def __create_gap_junctions(self):
         """Create gap junctions between cells"""
-        self.nml_document.add(
+        gap_junction_model = self.nml_document.add(
             neuroml.GapJunction,
-            id="Gj_0",
+            id="Gap_junction",
             conductance=self.model_params.get("Gap_junctions")["conductance"],
         )
         self.logger.debug(f"VAR: {self.golgi_cell_locations.shape = }")
@@ -254,25 +261,107 @@ class GolgiCellNetwork(object):
         # ensure minimum probability is 0
         connection_probability = numpy.maximum(connection_probability, 0)
         self.logger.debug(f"VAR: {connection_probability = }")
+        # get ones that are connected, print number of connected pairs
+        connected_cells = connection_probability > 0
+        self.logger.debug(f"VAR: {connected_cells = }")
+        num_connected = len(numpy.nonzero(connected_cells)[0])
+        self.logger.debug(f"VAR: {num_connected = }")
 
         weights_matrix = self.__get_gap_junction_weights_vervaeke2010(distance_bw_cells)
         self.logger.debug(f"VAR: {weights_matrix = }")
 
-        # pop_ctr = 0
-        # for pop in self.network.populations:
-        #     for cell_instance in pop.instances:
-        #         cell_index = (
-        #             pop_ctr * self.num_cells_per_golgi_cell_variant
-        #         ) + cell_instance.id
-        #         self.logger.debug(f"{cell_index = }")
-        #
-        #         # handle connection probability
-        #
-        #     pop_ctr += 1
+        # index in the condensed matrix
+        k = 0
+
+        # keep track of connected pops
+        projection_ids = {}
+        # iterate over the top triangle of the square matrices, which
+        # corresponds to the condensed matrices we have
+        for i in range(self.num_golgi_cells):
+            pre_cell_pop = int(i / self.num_cells_per_golgi_cell_variant)
+            pre_cell_index = i % self.num_cells_per_golgi_cell_variant
+            # self.logger.debug(f"VAR: {pre_cell_pop = }")
+            # self.logger.debug(f"VAR: {pre_cell_index = }")
+
+            pre_cell_pop_component = self.network.populations[pre_cell_pop]
+            pre_cell_component_id = pre_cell_pop_component.component
+
+            for j in range(i + 1, self.num_golgi_cells):
+                connected = connected_cells[k]
+
+                if connected:
+                    post_cell_pop = int(j / self.num_cells_per_golgi_cell_variant)
+                    post_cell_index = j % self.num_cells_per_golgi_cell_variant
+
+                    post_cell_pop_component = self.network.populations[post_cell_pop]
+                    post_cell_component_id = post_cell_pop_component.component
+                    # self.logger.debug(f"VAR: {post_cell_pop = }")
+                    # self.logger.debug(f"VAR: {post_cell_index = }")
+
+                    weight = weights_matrix[k]
+                    dendritic_id_pre = random.randint(
+                        0, self.__get_num_dendrites(pre_cell_component_id)
+                    )
+                    dendritic_id_post = random.randint(
+                        0, self.__get_num_dendrites(post_cell_component_id)
+                    )
+
+                    # create projection
+                    # track so that we don't add multiple projections
+                    # between the same populations
+                    projection_id = f"GJ_{pre_cell_pop}_{post_cell_pop}"
+                    try:
+                        projection_index = projection_ids[projection_id]
+                        projection = self.network.electrical_projections[
+                            projection_index
+                        ]
+                    except KeyError:
+                        projection = self.network.add(
+                            neuroml.ElectricalProjection,
+                            id=f"GJ_{pre_cell_pop}_{post_cell_pop}",
+                            presynaptic_population=pre_cell_pop_component.id,
+                            postsynaptic_population=post_cell_pop_component.id,
+                        )
+                        projection_ids[projection_id] = (
+                            len(self.network.electrical_projections) - 1
+                        )
+
+                    projection.add(
+                        neuroml.ElectricalConnectionInstanceW,
+                        id=k,
+                        pre_cell=f"../{pre_cell_pop_component.id}/{pre_cell_index}/{pre_cell_component_id}",
+                        pre_segment=f"{dendritic_id_pre}",
+                        post_cell=f"../{post_cell_pop_component.id}/{post_cell_index}/{post_cell_component_id}",
+                        post_segment=f"{dendritic_id_post}",
+                        synapse=gap_junction_model.id,
+                        weight=weight,
+                    )
+
+                k += 1
+
+    @functools.cache
+    def __get_num_dendrites(self, cell_component_id):
+        """Get number of dendrites in cell with given component_id
+
+        :param cell_component_id: component id of cell
+        :returns: number of dendrites in this cell component
+
+        """
+        cell: neuroml.Cell = self.golgi_cell_components[cell_component_id]
+        dendrites = cell.get_all_segments_in_group("dendrite_group")
+        return len(dendrites)
 
     def __get_gap_junction_weights_vervaeke2010(self, dist_matrix, dist_k=1):
         """Get weights of gap junctions as a function of distances between the
-        cell somas
+        cell somas.
+
+        The minimum weight is 0.
+
+        :param dist_matrix: condensed matrix of distances between cells
+        :param dist_k: scaling factor
+        :returns: matrix of weights, with 0 as minimum
+
+        Reference: Vervaeke 2010
         """
         coupling_coefficient = -2.3 + 29.7 * numpy.exp(
             (-1 * dist_matrix) / (70.4 * dist_k)
@@ -282,6 +371,7 @@ class GolgiCellNetwork(object):
             + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
             - 0.564
         )
+        weights[weights < 0] = 0
 
         return weights
 
