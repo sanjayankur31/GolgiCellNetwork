@@ -32,30 +32,6 @@ class GolgiCellNetwork(object):
 
     network_name = "Golgi_cell_network"
     nml_document = component_factory(neuroml.NeuroMLDocument, id=network_name)
-    annotation = create_annotation(
-        subject="Golgi_cell_network",
-        abstract="Cerebellar Golgi Cell network model",
-        title="Cerebellar Golgi Cell network model",
-        annotation_style="miriam",
-        xml_header=False,
-        keywords=["Golgi cell", "Cerebellum"],
-        creation_date="2025-06-21",
-        authors={
-            "Ankur Sinha": {
-                "ankur.sinha@ucl.ac.uk": "email",
-                "https://orcid.org/0000-0001-7568-7167": "orcid",
-            }
-        },
-        sources={"https://github.com/sanjayankur31/GolgiCellNetwork/": "GitHub"},
-        is_version_of={
-            "https://github.com/harshagurnani/GoC_Network_Sim_BehInputs": "Gurnani 2021"
-        },
-        references={
-            "https://doi.org/10.1016/j.neuron.2021.03.027": "Gurnani and Silver, 2021, Neuron 109, 1-15",
-            "https://doi.org/10.1016/j.neuron.2010.06.028": "Vervaeke et al, 2010, Neuron 67, 435 - 451",
-        },
-    )
-    nml_document.annotation = neuroml.Annotation([annotation])
     network = nml_document.add(neuroml.Network, id="Golgi_cell_network", validate=False)
 
     def __init__(
@@ -74,7 +50,7 @@ class GolgiCellNetwork(object):
         code_config_file: str = "parameters/general.json",
         model_parameters_file: str = "parameters/model.json",
         neuroml_file: typing.Optional[str] = None,
-        seed: typing.Optional[str] = None,
+        seed: typing.Optional[int] = None,
         label: typing.Optional[str] = None,
         lems_file: typing.Optional[str] = None,
         logging_level: typing.Optional[str] = None,
@@ -97,7 +73,11 @@ class GolgiCellNetwork(object):
         if seed:
             self.seed = seed
         else:
-            self.seed = self.general_params.get("seed", "1234")
+            self.seed = self.general_params.get("seed", 1234)
+
+        # set seeds
+        random.seed(self.seed)
+        numpy.random.seed(self.seed)
 
         if label:
             provided_label = label
@@ -149,6 +129,34 @@ class GolgiCellNetwork(object):
         with open(self.model_parameters_file) as f:
             self.model_params = json.load(f)
 
+        if self.general_params.get("Annotations", True):
+            annotation = create_annotation(
+                subject="Golgi_cell_network",
+                abstract="Cerebellar Golgi Cell network model",
+                title="Cerebellar Golgi Cell network model",
+                annotation_style="miriam",
+                xml_header=False,
+                keywords=["Golgi cell", "Cerebellum"],
+                creation_date="2025-06-21",
+                authors={
+                    "Ankur Sinha": {
+                        "ankur.sinha@ucl.ac.uk": "email",
+                        "https://orcid.org/0000-0001-7568-7167": "orcid",
+                    }
+                },
+                sources={"https://github.com/sanjayankur31/GolgiCellNetwork/": "GitHub"},
+                is_version_of={
+                    "https://github.com/harshagurnani/GoC_Network_Sim_BehInputs": "Gurnani 2021"
+                },
+                references={
+                    "https://doi.org/10.1016/j.neuron.2021.03.027": "Gurnani and Silver, 2021, Neuron 109, 1-15",
+                    "https://doi.org/10.1016/j.neuron.2010.06.028": "Vervaeke et al, 2010, Neuron 67, 435 - 451",
+                },
+            )
+            self.nml_document.annotation = neuroml.Annotation([annotation])
+        else:
+            self.logger.warn("Annotations disabled in params file")
+
         # do not use dict.get for the final because we want errors to be thrown
         # if these are missing
         self.network_xyz = self.model_params.get("Golgi_cells")["xyz"]
@@ -170,7 +178,10 @@ class GolgiCellNetwork(object):
         self.__get_golgi_cell_locations()
 
         self.__create_network()
-        self.__create_gap_junctions()
+        if self.model_params.get("Gap_junctions").get("enabled"):
+            self.__create_gap_junctions()
+        else:
+            self.logger.warn("Gap junctions disabled in model params")
 
         # write to file
         write_neuroml2_file(self.nml_document, self.neuroml_file)

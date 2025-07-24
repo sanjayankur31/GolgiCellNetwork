@@ -8,6 +8,7 @@
     },
     "Gap_junctions":
     {
+        "enabled": true,
         "conductance": "426pS"
     },
     "Unused": {
