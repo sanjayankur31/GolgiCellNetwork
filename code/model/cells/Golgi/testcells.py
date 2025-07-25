@@ -16,6 +16,7 @@ import neuroml
 from neuroml.utils import component_factory
 from pyneuroml.io import read_neuroml2_file, write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
+from pyneuroml.runners import run_lems_with_jneuroml_neuron
 
 logger = logging.getLogger("simple_example")
 logger.setLevel(logging.DEBUG)
@@ -71,6 +72,10 @@ def test_cells(amplitude: str = "0.05nA") -> None:
         dt="0.01",
         lems_file_name="LEMS_test_Golgi_cells.xml",
         target_dir=".",
+    )
+
+    run_lems_with_jneuroml_neuron(
+        "LEMS_test_Golgi_cells.xml", nogui=True, skip_run=False
     )
 
 
