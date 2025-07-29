@@ -13,6 +13,7 @@ import glob
 import json
 import logging
 import random
+import sys
 import typing
 
 import neuroml
@@ -144,7 +145,9 @@ class GolgiCellNetwork(object):
                         "https://orcid.org/0000-0001-7568-7167": "orcid",
                     }
                 },
-                sources={"https://github.com/sanjayankur31/GolgiCellNetwork/": "GitHub"},
+                sources={
+                    "https://github.com/sanjayankur31/GolgiCellNetwork/": "GitHub"
+                },
                 is_version_of={
                     "https://github.com/harshagurnani/GoC_Network_Sim_BehInputs": "Gurnani 2021"
                 },
@@ -170,9 +173,14 @@ class GolgiCellNetwork(object):
             else self.model_params.get("Golgi_cells")["num_populations"]
         )
         self.golgi_cell_files = glob.glob("./cells/Golgi/GoC_*.cell.nml")
-        self.golgi_cell_variants = numpy.random.choice(
-            self.golgi_cell_files, self.num_golgi_populations, replace=False
+
+        self.golgi_cell_variants = list(
+            numpy.random.choice(
+                self.golgi_cell_files, self.num_golgi_populations, replace=False
+            )
         )
+        self.golgi_cell_variants.sort()
+
         self.logger.debug(f"VAR: {self.golgi_cell_variants = }")
 
         self.__get_golgi_cell_locations()
@@ -226,7 +234,7 @@ class GolgiCellNetwork(object):
             self.nml_document.add(neuroml.IncludeType, href=golgi_cell_variant)
             pop = self.network.add(
                 neuroml.Population,
-                id=f"pop_{golgi_cell_component.id}",
+                id=f"{golgi_cell_component.id}_pop",
                 component=golgi_cell_component.id,
                 type="populationList",
             )
@@ -374,14 +382,22 @@ class GolgiCellNetwork(object):
 
         Reference: Vervaeke 2010
         """
+        weight_type = self.model_params.get("Gap_junctions")["weight_type"]
         coupling_coefficient = -2.3 + 29.7 * numpy.exp(
             (-1 * dist_matrix) / (70.4 * dist_k)
         )
-        weights = (
-            0.576 * numpy.exp(coupling_coefficient / 12.4)
-            + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
-            - 0.564
-        )
+        if weight_type == "Vervaeke2010":
+            weights = (
+                0.576 * numpy.exp(coupling_coefficient / 12.4)
+                + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
+                - 0.564
+            )
+        elif weight_type == "Szobozlay2016":
+            weights = 2 * coupling_coefficient / 5.0
+        else:
+            self.logger.error(f"Invalid Gap Junction weight type: {weight_type}")
+            sys.exit(-1)
+
         weights[weights < 0] = 0
 
         return weights

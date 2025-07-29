@@ -9,7 +9,9 @@
     "Gap_junctions":
     {
         "enabled": true,
-        "conductance": "426pS"
+        "conductance": "426pS",
+        "weight_type": "Szobozlay2016",
+        "unused_weight_type": "Vervaeke2010"
     },
     "Unused": {
         "MF_step": {
