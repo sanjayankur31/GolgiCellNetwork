@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Test cell models
+Generate membrane potential plots for cell variants with different step
+currents to characterise them.
 
-File: testcells.py
+File: analyse_cells.py
 
 Copyright 2025 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -11,10 +12,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import glob
 import logging
 
-import numpy
+import matplotlib as mpl
 from pyneuroml.analysis import generate_current_vs_frequency_curve
 from pyneuroml.io import read_neuroml2_file
+from pyneuroml.plot.PlotTimeSeries import plot_time_series_from_lems_file
 
+mpl.rcParams["figure.dpi"] = "300"
 logger = logging.getLogger("simple_example")
 logger.setLevel(logging.DEBUG)
 
@@ -33,21 +36,35 @@ def test_cells() -> None:
     cellfiles = glob.glob("GoC_0*.cell.nml")
     logger.debug(f"Cell files are: {cellfiles}")
 
-    # TODO: what current do Golgi cells receive in reality?
-    for cellfile in cellfiles[:1]:
+    for cellfile in cellfiles:
         cell = read_neuroml2_file(cellfile).cells[0]
         cell_id = cell.id
         generate_current_vs_frequency_curve(
             cellfile,
             cell_id=cell_id,
-            start_amp_nA=0.0,
-            custom_amps_nA=numpy.arange(-50.0, 10.0, 5.0, dtype=float),
+            start_amp_nA=-10.0e-3,
+            end_amp_nA=200.0e-3,
+            step_nA=10e-3,
             pre_zero_pulse=200,
             analysis_duration=500,
-            plot_voltage_traces=True,
             num_processors=8,
             simulator="jNeuroML_NEURON",
             dt=0.01,
+            plot_if=False,
+            show_plot_already=False,
+        )
+
+        lems_file = f"LEMS_iv_{cell_id}.xml"
+        plot_time_series_from_lems_file(
+            lems_file,
+            offset=True,
+            title=cell_id,
+            show_plot_already=False,
+            labels=False,
+            save_figure_to=f"{lems_file.replace('.xml', '.png')}",
+            bottom_left_spines_only=True,
+            title_above_plot=True,
+            close_plot=True,
         )
 
 
