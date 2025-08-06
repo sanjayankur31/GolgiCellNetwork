@@ -318,11 +318,11 @@ class GolgiCellNetwork(object):
                     # self.logger.debug(f"VAR: {post_cell_index = }")
 
                     weight = weights_matrix[k]
-                    dendritic_id_pre = random.randint(
-                        0, self.__get_num_dendrites(pre_cell_component_id)
+                    dendritic_id_pre = random.choice(
+                        self.__get_dendritic_ids(pre_cell_component_id)
                     )
-                    dendritic_id_post = random.randint(
-                        0, self.__get_num_dendrites(post_cell_component_id)
+                    dendritic_id_post = random.choice(
+                        self.__get_dendritic_ids(post_cell_component_id)
                     )
 
                     # create projection
@@ -359,7 +359,7 @@ class GolgiCellNetwork(object):
                 k += 1
 
     @functools.cache
-    def __get_num_dendrites(self, cell_component_id):
+    def __get_dendritic_ids(self, cell_component_id):
         """Get number of dendrites in cell with given component_id
 
         :param cell_component_id: component id of cell
@@ -368,7 +368,7 @@ class GolgiCellNetwork(object):
         """
         cell: neuroml.Cell = self.golgi_cell_components[cell_component_id]
         dendrites = cell.get_all_segments_in_group("dendrite_group")
-        return len(dendrites)
+        return dendrites
 
     def __get_gap_junction_weights_vervaeke2010(self, dist_matrix, dist_k=1):
         """Get weights of gap junctions as a function of distances between the
