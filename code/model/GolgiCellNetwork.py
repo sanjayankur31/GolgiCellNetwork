@@ -26,6 +26,7 @@ from pyneuroml.io import read_neuroml2_file, write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
 from pyneuroml.runners import run_lems_with
 from pyneuroml.utils.units import split_nml2_quantity
+from pyneuroml.validators import validate_neuroml2_lems_file
 
 
 class GolgiCellNetwork(object):
@@ -420,12 +421,18 @@ class GolgiCellNetwork(object):
         quantities, sim = generate_lems_file_for_neuroml(
             sim_id="test_golgi_cells",
             neuroml_file=self.neuroml_file,
-            target=self.network,
+            target=self.network.id,
             duration="1500 ms",
             dt="0.01",
             lems_file_name=self.lems_file,
             target_dir=".",
+            gen_plots_for_all_v=True,
+            gen_saves_for_all_v=True,
+            # gen_saves_for_only_populations=["GoC_00177_pop"],
+            simulation_seed=self.seed,
         )
+
+        validate_neuroml2_lems_file(self.lems_file)
 
     def simulate(
         self,
