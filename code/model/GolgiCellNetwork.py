@@ -159,7 +159,7 @@ class GolgiCellNetwork(object):
             )
             self.nml_document.annotation = neuroml.Annotation([annotation])
         else:
-            self.logger.warn("Annotations disabled in params file")
+            self.logger.warning("Annotations disabled in params file")
 
         # do not use dict.get for the final because we want errors to be thrown
         # if these are missing
