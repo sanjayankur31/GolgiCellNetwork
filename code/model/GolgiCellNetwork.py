@@ -437,7 +437,7 @@ class GolgiCellNetwork(object):
     def simulate(
         self,
         lems_file: typing.Optional[str] = None,
-        skip_run: bool = True,
+        skip_run: bool = False,
         only_generate_scripts: bool = False,
     ):
         """Simulate the model
@@ -449,6 +449,7 @@ class GolgiCellNetwork(object):
         :type only_generate_scripts: bool
 
         """
+        self.simulator = self.general_params.get("simulator", "jneuroml_neuron")
         if lems_file:
             self.lems_file = lems_file
         else:
@@ -461,9 +462,18 @@ class GolgiCellNetwork(object):
 
         # https://pyneuroml.readthedocs.io/en/development/pyneuroml.runners.html#pyneuroml.runners.run_lems_with
         # you can also use `pynml ..` from the command line to do this
-        run_lems_with(
-            engine="jneuroml_neuron", lems_file_name=self.lems_file, skip_run=skip_run
-        )
+
+        kwargs = {
+            "engine": self.simulator,
+            "lems_file_name": self.lems_file,
+            "skip_run": skip_run,
+        }
+
+        # disable gui for neuron runs
+        if "neuron" in self.simulator:
+            kwargs["nogui"] = True
+
+        run_lems_with(**kwargs)
 
 
 if __name__ == "__main__":
