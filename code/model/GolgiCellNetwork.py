@@ -142,7 +142,7 @@ class GolgiCellNetwork(object):
                 creation_date="2025-06-21",
                 authors={
                     "Ankur Sinha": {
-                        "ankur.sinha@ucl.ac.uk": "email",
+                        "ankur.sinha@ucl.ac.uk": "mbox",
                         "https://orcid.org/0000-0001-7568-7167": "orcid",
                     }
                 },
