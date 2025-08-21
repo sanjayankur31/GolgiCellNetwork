@@ -54,6 +54,7 @@ class GolgiCellNetwork(object):
         neuroml_file: typing.Optional[str] = None,
         seed: typing.Optional[int] = None,
         label: typing.Optional[str] = None,
+        model_variant: typing.Optional[str] = None,
         lems_file: typing.Optional[str] = None,
         logging_level: typing.Optional[str] = None,
     ):
@@ -72,6 +73,10 @@ class GolgiCellNetwork(object):
         with open(self.code_config_file) as f:
             self.general_params = json.load(f)
 
+        # load model parameters
+        with open(self.model_parameters_file) as f:
+            self.model_params = json.load(f)
+
         if seed:
             self.seed = seed
         else:
@@ -85,14 +90,24 @@ class GolgiCellNetwork(object):
             provided_label = label
         else:
             provided_label = self.general_params.get("label")
-        self.label = f"_{provided_label.replace(' ', '_')}" if provided_label else ""
+        self.label = f"{provided_label.replace(' ', '_')}" if provided_label else ""
+
+        if model_variant:
+            provided_model_variant = model_variant
+        else:
+            provided_model_variant = self.model_params.get("label")
+        self.model_variant = (
+            f"{provided_model_variant.replace(' ', '_')}"
+            if provided_model_variant
+            else ""
+        )
 
         if neuroml_file:
             self.neuroml_file = neuroml.file
         else:
             self.neuroml_file = self.general_params.get(
                 "neuroml_file",
-                f"{self.network_name}{self.label}_{self.seed}.net.nml",
+                f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}.net.nml",
             )
 
         if lems_file:
@@ -100,7 +115,7 @@ class GolgiCellNetwork(object):
         else:
             self.lems_file = self.general_params.get(
                 "lems_file",
-                f"LEMS_test_Golgi_cells{self.label}_{self.seed}.xml",
+                f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}.xml",
             )
 
         if logging_level:
@@ -123,13 +138,16 @@ class GolgiCellNetwork(object):
         self.logger.addHandler(ch)
         self.logger.propagate = False
 
+        self.logger.info(
+            f"CONFIG: General parameters: {self.label}: {self.code_config_file}"
+        )
+        self.logger.info(
+            f"CONFIG: Model parameters: {self.model_variant}: {self.model_parameters_file}"
+        )
+
     def create_model(self):
         """Create the model"""
         self.logger.info("Creating model")
-
-        # load model parameters
-        with open(self.model_parameters_file) as f:
-            self.model_params = json.load(f)
 
         if self.general_params.get("Annotations", True):
             annotation = create_annotation(
@@ -193,6 +211,7 @@ class GolgiCellNetwork(object):
             self.logger.warn("Gap junctions disabled in model params")
 
         # write to file
+        self.logger.info(f"Writing network to {self.neuroml_file}")
         write_neuroml2_file(self.nml_document, self.neuroml_file)
 
     def __get_golgi_cell_locations(self):
@@ -287,7 +306,29 @@ class GolgiCellNetwork(object):
         num_connected = len(numpy.nonzero(connected_cells)[0])
         self.logger.debug(f"VAR: {num_connected = }")
 
-        weights_matrix = self.__get_gap_junction_weights_vervaeke2010(distance_bw_cells)
+        gap_junction_weight_type = self.model_params.get("Gap_junctions")["weight_type"]
+        self.logger.debug(f"VAR: {gap_junction_weight_type = }")
+
+        if gap_junction_weight_type == "Vervaeke2010":
+            weights_matrix = self.__get_gap_junction_weights_vervaeke2010(
+                distance_bw_cells
+            )
+        elif gap_junction_weight_type == "Szobozlay2016":
+            weights_matrix = self.__get_gap_junction_weights_szobozlay2016(
+                distance_bw_cells
+            )
+        elif gap_junction_weight_type == "constant":
+            gap_junction_weight = self.model_params.get("Gap_junctions")[
+                "constant_weight"
+            ]
+            weights_matrix = self.__get_gap_junction_weights_constant(
+                distance_bw_cells, gap_junction_weight
+            )
+        else:
+            raise ValueError(
+                f"Invalid weight type for gap junctions: {gap_junction_weight_type}"
+            )
+
         self.logger.debug(f"VAR: {weights_matrix = }")
 
         # index in the condensed matrix
@@ -371,6 +412,37 @@ class GolgiCellNetwork(object):
         dendrites = cell.get_all_segments_in_group("dendrite_group")
         return dendrites
 
+    def __get_gap_junction_weights_constant(self, dist_matrix, weight=1):
+        """Get constant weights for gap junctions.
+
+        :param dist_matrix: condensed matrix of distances between cells
+        :param weight: weight to use
+        :returns: matrix of weights, with 0 as minimum
+
+        """
+        weights = numpy.empty(shape=dist_matrix.shape)
+        weights.fill(weight)
+
+        return weights
+
+    def __get_gap_junction_weights_szobozlay2016(self, dist_matrix, dist_k=1):
+        """Get constant weights for gap junctions.
+
+        :param dist_matrix: condensed matrix of distances between cells
+        :param dist_k: scaling factor
+        :returns: matrix of weights, with 0 as minimum
+
+        Reference: Szobozlay2016
+        """
+        coupling_coefficient = self.__get_gap_junction_coupling_coefficient(
+            dist_matrix, dist_k
+        )
+        weights = 2 * coupling_coefficient / 5.0
+
+        weights[weights < 0] = 0
+
+        return weights
+
     def __get_gap_junction_weights_vervaeke2010(self, dist_matrix, dist_k=1):
         """Get weights of gap junctions as a function of distances between the
         cell somas.
@@ -383,28 +455,37 @@ class GolgiCellNetwork(object):
 
         Reference: Vervaeke 2010
         """
-        weight_type = self.model_params.get("Gap_junctions")["weight_type"]
-        coupling_coefficient = -2.3 + 29.7 * numpy.exp(
-            (-1 * dist_matrix) / (70.4 * dist_k)
+        coupling_coefficient = self.__get_gap_junction_coupling_coefficient(
+            dist_matrix, dist_k
         )
-        if weight_type == "Vervaeke2010":
-            weights = (
-                0.576 * numpy.exp(coupling_coefficient / 12.4)
-                + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
-                - 0.564
-            )
-        elif weight_type == "Szobozlay2016":
-            weights = 2 * coupling_coefficient / 5.0
-        else:
-            self.logger.error(f"Invalid Gap Junction weight type: {weight_type}")
-            sys.exit(-1)
+        weights = (
+            0.576 * numpy.exp(coupling_coefficient / 12.4)
+            + 0.00059 * numpy.exp(coupling_coefficient / 2.79)
+            - 0.564
+        )
 
         weights[weights < 0] = 0
 
         return weights
 
+    def __get_gap_junction_coupling_coefficient(self, dist_matrix, dist_k=1):
+        """Get coupling coefficients for Gap Junctions.
+
+        :param dist_matrix: condensed matrix of distances between cells
+        :param dist_k: scaling factor
+        :returns: matrix of coupling coefficients
+
+        Reference: Vervaeke 2010
+        """
+        coupling_coefficient = -2.3 + 29.7 * numpy.exp(
+            (-1 * dist_matrix) / (70.4 * dist_k)
+        )
+
+        return coupling_coefficient
+
     def create_simulation(self, lems_file: typing.Optional[str] = None):
         """Create simulation
+
         :param lems_file: name of LEMS file to serialise simulation to
         :type lems_file: str
         """
@@ -418,6 +499,7 @@ class GolgiCellNetwork(object):
                 )
                 return
 
+        self.logger.info(f"Saving LEMS simulation file {self.lems_file}")
         quantities, sim = generate_lems_file_for_neuroml(
             sim_id="test_golgi_cells",
             neuroml_file=self.neuroml_file,
