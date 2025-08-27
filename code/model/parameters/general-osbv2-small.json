@@ -1,5 +1,5 @@
 {
-    "label": "osbv2",
+    "label": "osbv2_small",
     "seed": 1234,
     "logging_level": "DEBUG",
     "Annotations": false,

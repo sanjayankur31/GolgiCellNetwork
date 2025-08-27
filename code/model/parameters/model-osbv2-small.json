@@ -1,12 +1,12 @@
 {
-    "label": "osbv2",
+    "label": "osbv2_small",
     "Comment": "Model parameters for simulating on OSBv2",
     "Golgi_cells":
     {
         "density": "4607e-9 /um-3",
-        "xyz": ["500 um", "500 um", "100 um"],
+        "xyz": ["100 um", "100 um", "100 um"],
         "homogeneous": false,
-        "num_populations": 5
+        "num_populations": 2
     },
     "Gap_junctions":
     {
