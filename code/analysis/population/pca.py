@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 
+import matplotlib.pyplot as plt
 import numpy
 import typer
 from pyneuroml.plot import generate_plot
@@ -17,7 +18,7 @@ from pyneuroml.utils.simdata import load_sim_data_from_lems_file
 from sklearn.decomposition import PCA
 
 logging.basicConfig(level=logging.NOTSET)
-logger = logging.getLogger("task-split")
+logger = logging.getLogger("pca-analysis")
 logger.setLevel(logging.INFO)
 logger.propagate = False
 
@@ -44,7 +45,11 @@ def runner(lems_file: str, quantity: str = "v", num_components: int = 25):
     logger.info(f"{len(timeseries_data) = }")
 
     pca = PCA(num_components)
-    pca.fit_transform(timeseries_data)
+    scores = pca.fit_transform(timeseries_data)
+    scores_1st_component = scores[:, 0]
+
+    plt.hist(scores_1st_component, bins=25)
+    plt.show()
 
     eigenvalues = pca.explained_variance_
     explained_variance_ratio = pca.explained_variance_ratio_
