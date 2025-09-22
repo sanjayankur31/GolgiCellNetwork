@@ -15,6 +15,7 @@ import logging
 import random
 import sys
 import typing
+from datetime import datetime
 
 import neuroml
 import numpy
@@ -44,8 +45,11 @@ class GolgiCellNetwork(object):
         self.app = typer.Typer(help="Cerebellar Golgi Cell network model in NeuroML")
         self.app.command()(self.create_model)
         self.app.command()(self.create_simulation)
+        self.app.command()(self.create_model_simulation)
         self.app.command()(self.simulate)
         self.app.callback()(self.configure)
+
+        self.timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
     def configure(
         self,
@@ -107,7 +111,7 @@ class GolgiCellNetwork(object):
         else:
             self.neuroml_file = self.general_params.get(
                 "neuroml_file",
-                f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}.net.nml",
+                f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.net.nml",
             )
 
         if lems_file:
@@ -115,7 +119,7 @@ class GolgiCellNetwork(object):
         else:
             self.lems_file = self.general_params.get(
                 "lems_file",
-                f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}.xml",
+                f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml",
             )
 
         if logging_level:
@@ -483,13 +487,18 @@ class GolgiCellNetwork(object):
 
         return coupling_coefficient
 
-    def create_simulation(self, lems_file: typing.Optional[str] = None):
+    def create_simulation(
+        self,
+        lems_file: typing.Optional[str] = None,
+        model_file: typing.Optional[str] = None,
+    ):
         """Create simulation
 
         :param lems_file: name of LEMS file to serialise simulation to
         :type lems_file: str
         """
         if lems_file:
+            self.logger.info(f"LEMS file name provided. Using it: {lems_file}")
             self.lems_file = lems_file
         else:
             # if not already set, use a default
@@ -499,9 +508,15 @@ class GolgiCellNetwork(object):
                 )
                 return
 
+        if model_file:
+            self.logger.info(f"Model file name provided. Using it: {model_file}")
+            self.neuroml_file = model_file
+            self.timestamp = model_file.split(".")[0].split("_")[-1]
+            self.lems_file = f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml"
+
         self.logger.info(f"Saving LEMS simulation file {self.lems_file}")
         quantities, sim = generate_lems_file_for_neuroml(
-            sim_id="test_golgi_cells",
+            sim_id=f"test_golgi_cells_{self.timestamp}",
             neuroml_file=self.neuroml_file,
             target=self.network.id,
             duration="1500 ms",
@@ -515,6 +530,16 @@ class GolgiCellNetwork(object):
         )
 
         validate_neuroml2_lems_file(self.lems_file)
+
+    def create_model_simulation(self):
+        """Create both the model and simulation
+
+        Note, that this does not accept any parameters. So, it respects the
+        default parameters only.
+
+        """
+        self.create_model()
+        self.create_simulation()
 
     def simulate(
         self,
