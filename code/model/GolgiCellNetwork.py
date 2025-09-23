@@ -214,9 +214,16 @@ class GolgiCellNetwork(object):
         else:
             self.logger.warn("Gap junctions disabled in model params")
 
+        self.__add_stimuli()
+
         # write to file
         self.logger.info(f"Writing network to {self.neuroml_file}")
         write_neuroml2_file(self.nml_document, self.neuroml_file)
+
+    def __add_stimuli(self):
+        """Add stimuli to network"""
+        # TODO: add inputs
+        pass
 
     def __get_golgi_cell_locations(self):
         """Get locations of Golgi cells that fit in the given volume
