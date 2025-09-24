@@ -13,7 +13,6 @@ import glob
 import json
 import logging
 import random
-import sys
 import typing
 from datetime import datetime
 
@@ -22,6 +21,7 @@ import numpy
 import scipy
 import typer
 from neuroml.utils import component_factory
+from omegaconf import OmegaConf
 from pyneuroml.annotations import create_annotation
 from pyneuroml.io import read_neuroml2_file, write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
@@ -36,6 +36,8 @@ class GolgiCellNetwork(object):
     network_name = "Golgi_cell_network"
     nml_document = component_factory(neuroml.NeuroMLDocument, id=network_name)
     network = nml_document.add(neuroml.Network, id="Golgi_cell_network", validate=False)
+    default_sim_config_file = "parameters/simulation-defaults.json"
+    default_model_config_file = "parameters/model-defaults.json"
 
     def __init__(
         self,
@@ -53,14 +55,14 @@ class GolgiCellNetwork(object):
 
     def configure(
         self,
-        code_config_file: str = "parameters/general.json",
-        model_parameters_file: str = "parameters/model.json",
-        neuroml_file: typing.Optional[str] = None,
-        seed: typing.Optional[int] = None,
-        label: typing.Optional[str] = None,
-        model_variant: typing.Optional[str] = None,
-        lems_file: typing.Optional[str] = None,
-        logging_level: typing.Optional[str] = None,
+        sim_config_file: typing.Optional[str] = None,
+        model_parameters_file: typing.Optional[str] = None,
+        sim_overrides: list[str] = typer.Option(
+            None, help="Optional simulation parameters overrides"
+        ),
+        model_overrides: list[str] = typer.Option(
+            None, help="Optional model parameters overrides"
+        ),
     ):
         """Configure model
 
@@ -72,63 +74,69 @@ class GolgiCellNetwork(object):
         :type lems_file: str
 
         """
-        self.code_config_file = code_config_file
+        self.sim_config_file = sim_config_file
+        self.default_sim_parameters = OmegaConf.load(self.default_sim_config_file)
+
         self.model_parameters_file = model_parameters_file
-        with open(self.code_config_file) as f:
-            self.general_params = json.load(f)
+        self.default_model_parameters = OmegaConf.load(self.default_model_config_file)
+
+        if self.sim_config_file:
+            more_sim_parameters = OmegaConf.load(self.sim_config_file)
+            self.sim_parameters = OmegaConf.merge(
+                self.default_sim_parameters, more_sim_parameters
+            )
+        else:
+            self.sim_parameters = self.default_sim_parameters
+
+        if sim_overrides:
+            for o in sim_overrides:
+                key, val = o.split("=")
+                OmegaConf.update(self.sim_parameters, key, eval(val))
 
         # load model parameters
-        with open(self.model_parameters_file) as f:
-            self.model_params = json.load(f)
-
-        if seed:
-            self.seed = seed
+        if model_parameters_file:
+            more_model_parameters = OmegaConf.load(model_parameters_file)
+            self.model_parameters = OmegaConf.merge(
+                self.default_model_parameters, more_model_parameters
+            )
         else:
-            self.seed = self.general_params.get("seed", 1234)
+            self.model_parameters = self.default_model_parameters
+
+        if model_overrides:
+            for o in model_overrides:
+                key, val = o.split("=")
+                OmegaConf.update(self.model_parameters, key, eval(val))
+
+        self.seed = self.sim_parameters.get("seed", 1234)
 
         # set seeds
         random.seed(self.seed)
         numpy.random.seed(self.seed)
 
-        if label:
-            provided_label = label
-        else:
-            provided_label = self.general_params.get("label")
+        provided_label = self.sim_parameters.get("label")
         self.label = f"{provided_label.replace(' ', '_')}" if provided_label else ""
 
-        if model_variant:
-            provided_model_variant = model_variant
-        else:
-            provided_model_variant = self.model_params.get("label")
+        provided_model_variant = self.model_parameters.get("label")
         self.model_variant = (
             f"{provided_model_variant.replace(' ', '_')}"
             if provided_model_variant
             else ""
         )
 
-        if neuroml_file:
-            self.neuroml_file = neuroml.file
-        else:
-            self.neuroml_file = self.general_params.get(
-                "neuroml_file",
-                f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.net.nml",
-            )
+        self.neuroml_file = self.sim_parameters.get(
+            "neuroml_file",
+            f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.net.nml",
+        )
 
-        if lems_file:
-            self.lems_file = lems_file
-        else:
-            self.lems_file = self.general_params.get(
-                "lems_file",
-                f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml",
-            )
+        self.lems_file = self.sim_parameters.get(
+            "lems_file",
+            f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml",
+        )
 
-        if logging_level:
-            self.logging_level = logging_level
-        else:
-            self.logging_level = self.general_params.get(
-                "logging_level",
-                "DEBUG",
-            )
+        self.logging_level = self.sim_parameters.get(
+            "logging_level",
+            "DEBUG",
+        )
 
         # set up a logger
         self.logger = logging.getLogger(self.network_name)
@@ -142,18 +150,32 @@ class GolgiCellNetwork(object):
         self.logger.addHandler(ch)
         self.logger.propagate = False
 
-        self.logger.info(
-            f"CONFIG: General parameters: {self.label}: {self.code_config_file}"
+        self.logger.debug(
+            f"CONFIG: Simulation parameters: {json.dumps(OmegaConf.to_container(self.sim_parameters), indent=4)}"
         )
+        self.logger.debug(
+            f"CONFIG: Model parameters: {json.dumps(OmegaConf.to_container(self.model_parameters), indent=4)}"
+        )
+
+        consolidated_sim_config_file = f"simulation_{self.timestamp}.json"
+        with open(consolidated_sim_config_file, "w") as f:
+            json.dump(OmegaConf.to_container(self.sim_parameters), indent=4, fp=f)
         self.logger.info(
-            f"CONFIG: Model parameters: {self.model_variant}: {self.model_parameters_file}"
+            f"Simulation parameters written to: {consolidated_sim_config_file}"
+        )
+
+        consolidated_model_config_file = f"model_{self.timestamp}.json"
+        with open(consolidated_model_config_file, "w") as f:
+            json.dump(OmegaConf.to_container(self.model_parameters), indent=4, fp=f)
+        self.logger.info(
+            f"Model parameters written to: {consolidated_model_config_file}"
         )
 
     def create_model(self):
         """Create the model"""
         self.logger.info("Creating model")
 
-        if self.general_params.get("Annotations", True):
+        if self.sim_parameters.get("Annotations", True):
             annotation = create_annotation(
                 subject="Golgi_cell_network",
                 abstract="Cerebellar Golgi Cell network model",
@@ -181,19 +203,19 @@ class GolgiCellNetwork(object):
             )
             self.nml_document.annotation = neuroml.Annotation([annotation])
         else:
-            self.logger.warning("Annotations disabled in params file")
+            self.logger.warning("Annotations disabled in parameters file")
 
         # do not use dict.get for the final because we want errors to be thrown
         # if these are missing
-        self.network_xyz = self.model_params.get("Golgi_cells")["xyz"]
-        self.golgi_cell_density = self.model_params.get("Golgi_cells")["density"]
-        self.homogeneous_populations = self.model_params.get("Golgi_cells")[
+        self.network_xyz = self.model_parameters.get("Golgi_cells")["xyz"]
+        self.golgi_cell_density = self.model_parameters.get("Golgi_cells")["density"]
+        self.homogeneous_populations = self.model_parameters.get("Golgi_cells")[
             "homogeneous"
         ]
         self.num_golgi_populations = (
             1
             if self.homogeneous_populations
-            else self.model_params.get("Golgi_cells")["num_populations"]
+            else self.model_parameters.get("Golgi_cells")["num_populations"]
         )
         self.golgi_cell_files = glob.glob("./cells/Golgi/GoC_*.cell.nml")
 
@@ -209,10 +231,10 @@ class GolgiCellNetwork(object):
         self.__get_golgi_cell_locations()
 
         self.__create_network()
-        if self.model_params.get("Gap_junctions").get("enabled"):
+        if self.model_parameters.get("Gap_junctions").get("enabled"):
             self.__create_gap_junctions()
         else:
-            self.logger.warn("Gap junctions disabled in model params")
+            self.logger.warn("Gap junctions disabled in model parameters")
 
         self.__add_stimuli()
 
@@ -285,7 +307,7 @@ class GolgiCellNetwork(object):
         gap_junction_model = self.nml_document.add(
             neuroml.GapJunction,
             id="Gap_junction",
-            conductance=self.model_params.get("Gap_junctions")["conductance"],
+            conductance=self.model_parameters.get("Gap_junctions")["conductance"],
         )
         self.logger.debug(f"VAR: {self.golgi_cell_locations.shape = }")
         # returns the matrix in condensed form where it is read in row major
@@ -317,7 +339,9 @@ class GolgiCellNetwork(object):
         num_connected = len(numpy.nonzero(connected_cells)[0])
         self.logger.debug(f"VAR: {num_connected = }")
 
-        gap_junction_weight_type = self.model_params.get("Gap_junctions")["weight_type"]
+        gap_junction_weight_type = self.model_parameters.get("Gap_junctions")[
+            "weight_type"
+        ]
         self.logger.debug(f"VAR: {gap_junction_weight_type = }")
 
         if gap_junction_weight_type == "Vervaeke2010":
@@ -329,7 +353,7 @@ class GolgiCellNetwork(object):
                 distance_bw_cells
             )
         elif gap_junction_weight_type == "constant":
-            gap_junction_weight = self.model_params.get("Gap_junctions")[
+            gap_junction_weight = self.model_parameters.get("Gap_junctions")[
                 "constant_weight"
             ]
             weights_matrix = self.__get_gap_junction_weights_constant(
@@ -563,7 +587,7 @@ class GolgiCellNetwork(object):
         :type only_generate_scripts: bool
 
         """
-        self.simulator = self.general_params.get("simulator", "jneuroml_neuron")
+        self.simulator = self.sim_parameters.get("simulator", "jneuroml_neuron")
         if lems_file:
             self.lems_file = lems_file
         else:
