@@ -1,6 +1,6 @@
 {
-    "label": "osbv2",
-    "Comment": "Model parameters for simulating on OSBv2",
+    "label": "default",
+    "Comment": "Default model parameters",
     "Golgi_cells":
     {
         "density": "4607e-9 /um-3",
@@ -10,11 +10,14 @@
     },
     "Gap_junctions":
     {
-        "enabled": false,
+        "enabled": true,
         "conductance": "426pS",
-        "weight_type": "constant",
-        "constant_weight": "1.0",
-        "unused_weight_types": ["Vervaeke2010"," Szobozlay2016"]
+        "weight_type": "Szobozlay2016",
+        "unused_weight_types": ["Vervaeke2010", "constant"]
+    },
+    "Stimuli":
+    {
+
     },
     "Unused": {
         "MF_step": {

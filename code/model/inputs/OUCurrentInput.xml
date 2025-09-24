@@ -1,18 +1,4 @@
 <Lems>
-
-
-    <!-- Specify which component to run -->
-    <Target component="simnet1"/>
-
-    <!-- Include core NeuroML2 ComponentType definitions -->
-    <Include file="PyNN.xml"/>
-    <Include file="Cells.xml"/>
-    <Include file="Networks.xml"/>
-    <Include file="Simulation.xml"/>
-    <Dimension name="current_per_time" i="1" t="-1" />
-    <Unit symbol="nA_per_ms" dimension="current_per_time" power="-6" />
-
-
     <ComponentType name="ouCurrentSource" extends="baseVoltageDepPointCurrentSpiking"
                    description="...">
         <!--
