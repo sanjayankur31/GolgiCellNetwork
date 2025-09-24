@@ -1,0 +1,15 @@
+{
+    "label": "nogaps",
+    "Comment": "Gap junctions disabled, smaller network for testing",
+    "Golgi_cells":
+    {
+        "density": "4607e-9 /um-3",
+        "xyz": ["50 um", "50 um", "100 um"],
+        "homogeneous": true,
+        "num_populations": 1
+    },
+    "Gap_junctions":
+    {
+        "enabled": false
+    }
+}

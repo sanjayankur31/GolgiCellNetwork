@@ -17,7 +17,21 @@
     },
     "Stimuli":
     {
-
+        "Gaussian_":{
+            "delay": "2000ms",
+            "duration": "2000ms",
+            "mean": "-100pA",
+            "stdev": "600pA",
+            "noiseDt": "0.01ms"
+        },
+        "OU": {
+            "start": "2000ms",
+            "stop": "2000ms",
+            "mean": "0pA",
+            "stdev": "15nA_per_ms",
+            "tau": "2ms",
+            "noiseDt": "0.01ms"
+        }
     },
     "Unused": {
         "MF_step": {

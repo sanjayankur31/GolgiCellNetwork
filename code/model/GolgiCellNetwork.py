@@ -26,6 +26,7 @@ from pyneuroml.annotations import create_annotation
 from pyneuroml.io import read_neuroml2_file, write_neuroml2_file
 from pyneuroml.lems import generate_lems_file_for_neuroml
 from pyneuroml.runners import run_lems_with
+from pyneuroml.utils.components import add_new_component
 from pyneuroml.utils.units import split_nml2_quantity
 from pyneuroml.validators import validate_neuroml2_lems_file
 
@@ -38,6 +39,7 @@ class GolgiCellNetwork(object):
     network = nml_document.add(neuroml.Network, id="Golgi_cell_network", validate=False)
     default_sim_config_file = "parameters/simulation-defaults.json"
     default_model_config_file = "parameters/model-defaults.json"
+    lems_includes: list[str] = []
 
     def __init__(
         self,
@@ -48,6 +50,7 @@ class GolgiCellNetwork(object):
         self.app.command()(self.create_model)
         self.app.command()(self.create_simulation)
         self.app.command()(self.create_model_simulation)
+        self.app.command()(self.create_model_simulation_run)
         self.app.command()(self.simulate)
         self.app.callback()(self.configure)
 
@@ -108,16 +111,18 @@ class GolgiCellNetwork(object):
                 OmegaConf.update(self.model_parameters, key, eval(val))
 
         self.seed = self.sim_parameters.get("seed", 1234)
+        self.duration = self.sim_parameters.get("duration", "1500 ms")
+        self.dt = self.sim_parameters.get("dt", "0.01ms")
 
         # set seeds
         random.seed(self.seed)
         numpy.random.seed(self.seed)
 
         provided_label = self.sim_parameters.get("label")
-        self.label = f"{provided_label.replace(' ', '_')}" if provided_label else ""
+        self.sim_label = f"{provided_label.replace(' ', '_')}" if provided_label else ""
 
         provided_model_variant = self.model_parameters.get("label")
-        self.model_variant = (
+        self.model_label = (
             f"{provided_model_variant.replace(' ', '_')}"
             if provided_model_variant
             else ""
@@ -125,12 +130,12 @@ class GolgiCellNetwork(object):
 
         self.neuroml_file = self.sim_parameters.get(
             "neuroml_file",
-            f"{self.network_name}_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.net.nml",
+            f"{self.network_name}_{self.sim_label}_{self.model_label}_{self.timestamp}.net.nml",
         )
 
         self.lems_file = self.sim_parameters.get(
             "lems_file",
-            f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml",
+            f"LEMS_test_Golgi_cells_{self.sim_label}_{self.model_label}_{self.timestamp}.xml",
         )
 
         self.logging_level = self.sim_parameters.get(
@@ -244,8 +249,68 @@ class GolgiCellNetwork(object):
 
     def __add_stimuli(self):
         """Add stimuli to network"""
-        # TODO: add inputs
-        pass
+        stimuli = self.model_parameters.get("Stimuli")
+
+        gaussian = stimuli.get("Gaussian", None)
+        ou = stimuli.get("OU", None)
+        if gaussian:
+            self.lems_includes.append("inputs/NoisyCurrentSource.xml")
+            for pop in self.network.populations:
+                for inst in pop.instances:
+                    component_filename = (
+                        f"inputs/gaussian_{pop.id}_{inst.id}_{self.timestamp}.xml"
+                    )
+                    add_new_component(
+                        component_id=f"gaussian_input_{pop.id}_{inst.id}",
+                        component_type="noisyCurrentSource",
+                        component_filename=component_filename,
+                        **gaussian,
+                    )
+                    self.lems_includes.append(component_filename)
+
+                    input_list = self.network.add(
+                        neuroml.InputList,
+                        id=f"input_{pop.id}_{inst.id}",
+                        component=f"gaussian_input_{pop.id}_{inst.id}",
+                        populations=pop.id,
+                        validate=False,
+                    )
+                    input_list.add(
+                        neuroml.Input,
+                        id=inst.id,
+                        target=f"../{pop.id}/{inst.id}/{pop.component}",
+                        destination="synapses",
+                    )
+        elif ou:
+            self.lems_includes.append("inputs/OUCurrentInput.xml")
+            for pop in self.network.populations:
+                for inst in pop.instances:
+                    component_filename = (
+                        f"inputs/ou_{pop.id}_{inst.id}_{self.timestamp}.xml"
+                    )
+                    add_new_component(
+                        component_id=f"ou_input_{pop.id}_{inst.id}",
+                        component_type="ouCurrentSource",
+                        component_filename=component_filename,
+                        **ou,
+                    )
+                    self.lems_includes.append(component_filename)
+
+                    input_list = self.network.add(
+                        neuroml.InputList,
+                        id=f"input_{pop.id}_{inst.id}",
+                        component=f"ou_input_{pop.id}_{inst.id}",
+                        populations=pop.id,
+                        validate=False,
+                    )
+                    input_list.add(
+                        neuroml.Input,
+                        id=inst.id,
+                        target=f"../{pop.id}/{inst.id}/{pop.component}",
+                        destination="synapses",
+                    )
+        else:
+            self.logger.warning("NO INPUTS SPECIFIED!")
 
     def __get_golgi_cell_locations(self):
         """Get locations of Golgi cells that fit in the given volume
@@ -543,15 +608,16 @@ class GolgiCellNetwork(object):
             self.logger.info(f"Model file name provided. Using it: {model_file}")
             self.neuroml_file = model_file
             self.timestamp = model_file.split(".")[0].split("_")[-1]
-            self.lems_file = f"LEMS_test_Golgi_cells_{self.label}_{self.model_variant}_{self.seed}_{self.timestamp}.xml"
+            self.lems_file = f"LEMS_test_Golgi_cells_{self.sim_label}_{self.model_label}_{self.timestamp}.xml"
 
         self.logger.info(f"Saving LEMS simulation file {self.lems_file}")
         quantities, sim = generate_lems_file_for_neuroml(
             sim_id=f"test_golgi_cells_{self.timestamp}",
             neuroml_file=self.neuroml_file,
             target=self.network.id,
-            duration="1500 ms",
-            dt="0.01",
+            duration=self.duration,
+            dt=self.dt,
+            include_extra_files=self.lems_includes,
             lems_file_name=self.lems_file,
             target_dir=".",
             gen_plots_for_all_v=True,
@@ -561,6 +627,17 @@ class GolgiCellNetwork(object):
         )
 
         validate_neuroml2_lems_file(self.lems_file)
+
+    def create_model_simulation_run(self):
+        """Create model, simulation, and run it
+
+        Note, that this does not accept any parameters. So, it respects the
+        default parameters only.
+
+        """
+        self.create_model()
+        self.create_simulation()
+        self.simulate()
 
     def create_model_simulation(self):
         """Create both the model and simulation

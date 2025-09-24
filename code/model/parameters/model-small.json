@@ -1,0 +1,11 @@
+{
+    "label": "small",
+    "Comment": "Smaller network for testing",
+    "Golgi_cells":
+    {
+        "density": "4607e-9 /um-3",
+        "xyz": ["100 um", "100 um", "100 um"],
+        "homogeneous": true,
+        "num_populations": 1
+    }
+}

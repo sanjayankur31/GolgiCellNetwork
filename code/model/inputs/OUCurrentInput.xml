@@ -1,4 +1,8 @@
 <Lems>
+
+    <Dimension name="current_per_time" i="1" t="-1" />
+    <Unit symbol="nA_per_ms" dimension="current_per_time" power="-6" />
+
     <ComponentType name="ouCurrentSource" extends="baseVoltageDepPointCurrentSpiking"
                    description="...">
         <!--

@@ -4,6 +4,8 @@
     "logging_level": "DEBUG",
     "Annotations": false,
     "simulator": "jneuroml_neuron",
+    "duration": "10000 ms",
+    "dt": "0.01ms",
     "hack to keep unused bits is to put them in a dict that wont be used": {
         "neuroml_file": "some_thing",
         "lems_file": "some_thing"
