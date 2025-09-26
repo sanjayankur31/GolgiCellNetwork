@@ -3,6 +3,7 @@ pyneuroml
 pyneuroml[annotations]
 pyneuroml[neuron]
 pyneuroml[vispy]
+omegaconf
 OSBModelValidation
 ruff
 pre-commit
